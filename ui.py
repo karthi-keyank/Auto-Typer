@@ -8,42 +8,66 @@ def build_ui(app):
 
     root.title(C.APP_TITLE)
     root.geometry(f"{C.WINDOW_WIDTH}x{C.WINDOW_HEIGHT}")
-
-    # ✅ ENABLE RESIZING
     root.resizable(True, True)
 
     style = ttk.Style()
     style.theme_use(C.THEME)
 
-    # Root grid config (IMPORTANT)
+    # Root grid
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
     main = ttk.Frame(root, padding=12)
     main.grid(row=0, column=0, sticky="nsew")
 
-    # Main grid config
     main.columnconfigure(0, weight=1)
-    main.rowconfigure(1, weight=1)  # text area grows
+    main.rowconfigure(2, weight=1)  # text box grows
 
-    # Title
+    # --------------------------------------------------
+    # TITLE
+    # --------------------------------------------------
     ttk.Label(
         main,
         text=C.APP_TITLE,
         font=C.FONT_TITLE
     ).grid(row=0, column=0, sticky="w", pady=(0, 6))
 
-    # Text box (RESIZABLE CORE)
+    # --------------------------------------------------
+    # SEARCH BAR
+    # --------------------------------------------------
+    search_frame = ttk.Frame(main)
+    search_frame.grid(row=1, column=0, sticky="ew", pady=(0, 6))
+    search_frame.columnconfigure(1, weight=1)
+
+    ttk.Label(search_frame, text="Search:").grid(row=0, column=0, padx=(0, 6))
+
+    app.search_var = tk.StringVar()
+    app.search_entry = ttk.Entry(search_frame, textvariable=app.search_var)
+    app.search_entry.grid(row=0, column=1, sticky="ew")
+
+    # Search results dropdown
+    app.search_results = tk.Listbox(
+        main,
+        height=5
+    )
+    app.search_results.grid(row=3, column=0, sticky="ew", pady=(0, 6))
+    app.search_results.grid_remove()  # hidden initially
+
+    # --------------------------------------------------
+    # TEXT BOX
+    # --------------------------------------------------
     app.text_box = tk.Text(
         main,
         font=C.FONT_TEXTBOX,
         wrap="word"
     )
-    app.text_box.grid(row=1, column=0, sticky="nsew", pady=6)
+    app.text_box.grid(row=2, column=0, sticky="nsew", pady=6)
 
-    # Options row
+    # --------------------------------------------------
+    # OPTIONS
+    # --------------------------------------------------
     options = ttk.Frame(main)
-    options.grid(row=2, column=0, sticky="w", pady=6)
+    options.grid(row=4, column=0, sticky="w", pady=6)
 
     ttk.Label(options, text="Start Delay (sec):").grid(row=0, column=0)
     app.delay_entry = ttk.Entry(options, width=6)
@@ -55,7 +79,6 @@ def build_ui(app):
     app.char_delay_entry.insert(0, C.DEFAULT_CHAR_DELAY)
     app.char_delay_entry.grid(row=0, column=3, padx=5)
 
-    # Coding mode
     app.coding_mode = tk.BooleanVar(value=False)
     ttk.Checkbutton(
         options,
@@ -63,9 +86,11 @@ def build_ui(app):
         variable=app.coding_mode
     ).grid(row=0, column=4, padx=20)
 
-    # Buttons row
+    # --------------------------------------------------
+    # BUTTONS
+    # --------------------------------------------------
     btns = ttk.Frame(main)
-    btns.grid(row=3, column=0, pady=10)
+    btns.grid(row=5, column=0, pady=10)
 
     app.start_btn = ttk.Button(btns, text="Start", width=12, command=app.start)
     app.start_btn.grid(row=0, column=0, padx=6)
@@ -81,11 +106,19 @@ def build_ui(app):
     app.restart_btn = ttk.Button(btns, text="Restart", width=12, command=app.restart)
     app.restart_btn.grid(row=0, column=3, padx=6)
 
-    # Status bar (fixed height, full width)
+    app.upload_btn = ttk.Button(btns, text="Upload", width=12, command=app.upload)
+    app.upload_btn.grid(row=0, column=4, padx=6)
+
+    app.fetch_btn = ttk.Button(btns, text="Fetch", width=12, command=app.fetch)
+    app.fetch_btn.grid(row=0, column=5, padx=6)
+
+    # --------------------------------------------------
+    # STATUS BAR
+    # --------------------------------------------------
     app.status_var = tk.StringVar(value=C.STATUS_KEYS)
     ttk.Label(
         main,
         textvariable=app.status_var,
         relief="sunken",
         anchor="w"
-    ).grid(row=4, column=0, sticky="ew", pady=(8, 0))
+    ).grid(row=6, column=0, sticky="ew", pady=(8, 0))
