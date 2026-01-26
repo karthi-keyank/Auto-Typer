@@ -1,6 +1,5 @@
 ---
-
-# 🧠 AutoTyper for Skillrack Assessments (v3.0)
+# 🧠 AutoTyper for Skillrack Assessments (v3.1)
 
 AutoTyper is a **Windows desktop application** that automatically types text and code **character by character**, simulating real keyboard input.
 
@@ -36,7 +35,7 @@ AutoTyper types everything automatically.
 
 ---
 
-## ✨ Key Features (v3.0)
+## ✨ Key Features (v3.1)
 
 ### ⌨️ Auto Typing
 
@@ -62,26 +61,28 @@ AutoTyper types everything automatically.
 * Search snippets by **name**
 * Search using **#tags**
 * Partial and mixed search supported
-  Examples:
 
-  ```
-  binary
-  #python
-  regex #python
-  ```
+Examples:
+
+```
+binary
+#python
+regex #python
+```
 
 ---
 
-### ☁️ Google Drive Integration
+### ☁️ Cloud Sync (Firebase)
 
-* Upload text/code snippets to Google Drive
-* Fetch snippets from Drive
-* Automatic Drive folder creation (`AutoTyperTexts`)
-* Secure OAuth login via browser
-* Logout supported
+* Upload text/code snippets to the cloud
+* Fetch snippets from anywhere
+* Multi-line text supported
+* No copy–paste limitations
+* Fast and reliable sync
 
-> Each user syncs with **their own Google Drive**
-> Files are private and not shared across users.
+> All snippets are stored in **Firebase Firestore**
+> The backend is **community-ready** by design.
+
 ---
 
 ### 📁 Local Cache (Offline-First)
@@ -97,11 +98,12 @@ AutoTyper types everything automatically.
 
 * Automatically renames duplicates:
 
-  ```
-  code.txt
-  code (1).txt
-  code (2).txt
-  ```
+```
+code.txt
+code (1).txt
+code (2).txt
+```
+
 * No overwriting
 * No prompts
 * Safe and predictable behavior
@@ -111,7 +113,7 @@ AutoTyper types everything automatically.
 ### ⚙️ Settings Panel
 
 * Clear Local Cache
-* Logout from Google Drive
+* Reset Cloud Connection
 * Clean modal UI
 * Confirmation for destructive actions
 
@@ -131,7 +133,8 @@ AutoTyper types everything automatically.
 
 * **Tkinter** → GUI
 * **pyautogui** → keyboard input simulation
-* **Google Drive API** → cloud sync
+* **Firebase Firestore** → cloud snippet storage
+* **Firebase Admin SDK** → secure backend access
 * **Threading** → non-blocking UI
 * **Offline-first design** → fast & reliable
 
@@ -148,11 +151,24 @@ The app is packaged using **PyInstaller**.
 * Download `AutoTyper.exe`
 * Run directly (no setup required)
 
+---
+
 ### Option 2: Build Yourself
 
+Requirements:
+
+* Python 3.9+
+* `firebase-admin`
+* `pyautogui`
+* `pyinstaller`
+
+Build command:
+
 ```powershell
-pyinstaller --onefile --windowed --name AutoTyper --add-data "credentials.json;." main.py
+pyinstaller --onefile --noconsole --add-data "firebase_service_account.json;." --name AutoTyper main.py
 ```
+
+> The Firebase service account file is bundled securely inside the EXE.
 
 ---
 
@@ -175,9 +191,9 @@ AutoTyper will type everything automatically ⚡
 ## ⚠️ Important Notes
 
 * AutoTyper types like a **human keyboard**, not paste
-* Google login is required only for Drive features
-* Logging out removes stored Drive access
-* Local cache can be cleared anytime
+* Internet is required only for cloud sync
+* Local cache works offline
+* Cloud data is not deleted when clearing cache
 
 ---
 
@@ -202,6 +218,8 @@ The developer is not responsible for misuse.
 ## 🔮 Future Plans
 
 * Community/shared snippet library
+* Public / private snippets
+* User authentication
 * Dark mode
 * Snippet categories & folders
 * Content preview in search
@@ -212,12 +230,13 @@ The developer is not responsible for misuse.
 
 ## ⭐ Final Note
 
-AutoTyper v3.0 is designed to be:
+AutoTyper v3.1 is designed to be:
 
 * Fast
 * Safe
 * Offline-first
-* Productivity-focused
+* Cloud-powered
 
 It is no longer just an auto typer —
-it’s a **personal code & text assistant**.
+it’s a **personal and community-ready code & text assistant** 🚀
+
