@@ -6,6 +6,9 @@ import constants as C
 def build_ui(app):
     root = app.root
 
+    # --------------------------------------------------
+    # WINDOW
+    # --------------------------------------------------
     root.title(C.APP_TITLE)
     root.geometry(f"{C.WINDOW_WIDTH}x{C.WINDOW_HEIGHT}")
     root.resizable(True, True)
@@ -13,112 +16,125 @@ def build_ui(app):
     style = ttk.Style()
     style.theme_use(C.THEME)
 
-    # Root grid
+    # --------------------------------------------------
+    # ROOT GRID
+    # --------------------------------------------------
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
 
-    main = ttk.Frame(root, padding=12)
+    main = ttk.Frame(root, padding=14)
     main.grid(row=0, column=0, sticky="nsew")
 
     main.columnconfigure(0, weight=1)
-    main.rowconfigure(2, weight=1)  # text box grows
+    main.rowconfigure(3, weight=1)  # editor grows
 
     # --------------------------------------------------
-    # TITLE
+    # HEADER
     # --------------------------------------------------
+    header = ttk.Frame(main)
+    header.grid(row=0, column=0, sticky="ew", pady=(0, 8))
+    header.columnconfigure(0, weight=1)
+
     ttk.Label(
-        main,
+        header,
         text=C.APP_TITLE,
         font=C.FONT_TITLE
-    ).grid(row=0, column=0, sticky="w", pady=(0, 6))
+    ).grid(row=0, column=0, sticky="w")
 
     # --------------------------------------------------
-    # SEARCH BAR
+    # SEARCH
     # --------------------------------------------------
-    search_frame = ttk.Frame(main)
-    search_frame.grid(row=1, column=0, sticky="ew", pady=(0, 6))
+    search_frame = ttk.LabelFrame(main, text=" Search ")
+    search_frame.grid(row=1, column=0, sticky="ew", pady=(0, 8))
     search_frame.columnconfigure(1, weight=1)
 
-    ttk.Label(search_frame, text="Search:").grid(row=0, column=0, padx=(0, 6))
+    ttk.Label(search_frame, text="🔍").grid(row=0, column=0, padx=(6, 4))
 
     app.search_var = tk.StringVar()
-    app.search_entry = ttk.Entry(search_frame, textvariable=app.search_var)
-    app.search_entry.grid(row=0, column=1, sticky="ew")
+    app.search_entry = ttk.Entry(
+        search_frame,
+        textvariable=app.search_var
+    )
+    app.search_entry.grid(row=0, column=1, sticky="ew", padx=(0, 6), pady=4)
 
     # Search results dropdown
     app.search_results = tk.Listbox(
         main,
-        height=5
+        height=6,
+        activestyle="dotbox"
     )
-    app.search_results.grid(row=3, column=0, sticky="ew", pady=(0, 6))
-    app.search_results.grid_remove()  # hidden initially
+    app.search_results.grid(row=2, column=0, sticky="ew", pady=(0, 6))
+    app.search_results.grid_remove()
 
     # --------------------------------------------------
-    # TEXT BOX
+    # TEXT EDITOR
     # --------------------------------------------------
+    editor_frame = ttk.LabelFrame(main, text=" Text to Type ")
+    editor_frame.grid(row=3, column=0, sticky="nsew", pady=(0, 8))
+    editor_frame.columnconfigure(0, weight=1)
+    editor_frame.rowconfigure(0, weight=1)
+
     app.text_box = tk.Text(
-        main,
+        editor_frame,
         font=C.FONT_TEXTBOX,
-        wrap="word"
+        wrap="word",
+        undo=True
     )
-    app.text_box.grid(row=2, column=0, sticky="nsew", pady=6)
+    app.text_box.grid(row=0, column=0, sticky="nsew", padx=4, pady=4)
 
     # --------------------------------------------------
     # OPTIONS
     # --------------------------------------------------
-    options = ttk.Frame(main)
-    options.grid(row=4, column=0, sticky="w", pady=6)
+    options = ttk.LabelFrame(main, text=" Options ")
+    options.grid(row=4, column=0, sticky="ew", pady=(0, 8))
 
-    ttk.Label(options, text="Start Delay (sec):").grid(row=0, column=0)
+    ttk.Label(options, text="Start delay (sec):").grid(row=0, column=0, padx=6, pady=4)
     app.delay_entry = ttk.Entry(options, width=6)
     app.delay_entry.insert(0, C.DEFAULT_START_DELAY)
-    app.delay_entry.grid(row=0, column=1, padx=5)
+    app.delay_entry.grid(row=0, column=1, pady=4)
 
-    ttk.Label(options, text="Character Delay (ms):").grid(row=0, column=2, padx=(15, 0))
+    ttk.Label(options, text="Char delay (ms):").grid(row=0, column=2, padx=(16, 6), pady=4)
     app.char_delay_entry = ttk.Entry(options, width=6)
     app.char_delay_entry.insert(0, C.DEFAULT_CHAR_DELAY)
-    app.char_delay_entry.grid(row=0, column=3, padx=5)
+    app.char_delay_entry.grid(row=0, column=3, pady=4)
 
     app.coding_mode = tk.BooleanVar(value=False)
     ttk.Checkbutton(
         options,
         text="Coding mode (auto delete paired brackets)",
         variable=app.coding_mode
-    ).grid(row=0, column=4, padx=20)
+    ).grid(row=0, column=4, padx=16, pady=4)
 
     # --------------------------------------------------
-    # BUTTONS
+    # ACTION BUTTONS
     # --------------------------------------------------
     btns = ttk.Frame(main)
-    btns.grid(row=5, column=0, pady=10)
+    btns.grid(row=5, column=0, pady=(4, 8))
 
-    app.start_btn = ttk.Button(btns, text="Start", width=12, command=app.start)
-    app.start_btn.grid(row=0, column=0, padx=6)
+    def add_btn(col, text, cmd):
+        b = ttk.Button(btns, text=text, width=11, command=cmd)
+        b.grid(row=0, column=col, padx=4)
+        return b
 
-    app.pause_btn = ttk.Button(btns, text="Pause", width=12, command=app.pause)
-    app.pause_btn.grid(row=0, column=1, padx=6)
+    app.start_btn    = add_btn(0, "▶ Start", app.start)
+    app.pause_btn    = add_btn(1, "⏸ Pause", app.pause)
+    app.stop_btn     = add_btn(2, "⏹ Stop", app.stop)
+    app.restart_btn  = add_btn(3, "🔁 Restart", app.restart)
+    app.upload_btn   = add_btn(4, "⬆ Upload", app.upload)
+    app.fetch_btn    = add_btn(5, "⬇ Fetch", app.fetch)
+    app.settings_btn = add_btn(6, "⚙ Settings", app.open_settings)
+
     app.pause_btn.state(["disabled"])
-
-    app.stop_btn = ttk.Button(btns, text="Stop", width=12, command=app.stop)
-    app.stop_btn.grid(row=0, column=2, padx=6)
     app.stop_btn.state(["disabled"])
-
-    app.restart_btn = ttk.Button(btns, text="Restart", width=12, command=app.restart)
-    app.restart_btn.grid(row=0, column=3, padx=6)
-
-    app.upload_btn = ttk.Button(btns, text="Upload", width=12, command=app.upload)
-    app.upload_btn.grid(row=0, column=4, padx=6)
-
-    app.fetch_btn = ttk.Button(btns, text="Fetch", width=12, command=app.fetch)
-    app.fetch_btn.grid(row=0, column=5, padx=6)
 
     # --------------------------------------------------
     # STATUS BAR
     # --------------------------------------------------
-    app.status_var = tk.StringVar(value=C.STATUS_KEYS)
-    ttk.Label(
+    app.status_var = tk.StringVar(value=C.STATUS_READY)
+    status = ttk.Label(
         main,
         textvariable=app.status_var,
         relief="sunken",
         anchor="w"
-    ).grid(row=6, column=0, sticky="ew", pady=(8, 0))
+    )
+    status.grid(row=6, column=0, sticky="ew")

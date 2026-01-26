@@ -38,6 +38,13 @@ def load_text_file(filename: str) -> str:
         raise FileNotFoundError(filename)
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
+    
+def clear_cache():
+    ensure_cache_dir()
+    for file in CACHE_DIR.iterdir():
+        if file.is_file():
+            file.unlink()
+
 
 
 # ======================================================

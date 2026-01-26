@@ -3,14 +3,17 @@ from tkinter import messagebox
 
 from ui import build_ui
 from typer import type_text
-from hotkeys import bind_hotkeys
 import constants as C
 
 from drive_client import DriveClient
+from drive_client import logout as drive_logout
+from settings_dialog import open_settings_dialog
+
 from file_cache import (
     save_text_file,
     load_text_file,
-    search_files
+    search_files,
+    clear_cache
 )
 from upload_dialog import ask_upload_filename
 
@@ -19,7 +22,9 @@ class AutoTyperApp:
     def __init__(self, root):
         self.root = root
 
+        # -------------------------------
         # Typing control
+        # -------------------------------
         self.stop_event = threading.Event()
         self.resume_event = threading.Event()
         self.resume_event.set()
@@ -30,18 +35,22 @@ class AutoTyperApp:
         # Drive client (lazy init)
         self.drive = None
 
+        # -------------------------------
         # UI
+        # -------------------------------
         build_ui(self)
-        bind_hotkeys(self)
 
         # Search bindings
         self.search_var.trace_add("write", self.on_search)
         self.search_results.bind("<<ListboxSelect>>", self.on_result_select)
 
+        # Auto fetch AFTER UI loads
+        self.root.after(500, self.auto_fetch_on_start)
+
         self.update_progress()
 
     # ==================================================
-    # TYPING LOGIC (UNCHANGED)
+    # TYPING LOGIC
     # ==================================================
     def start(self):
         if self.is_running:
@@ -114,6 +123,28 @@ class AutoTyperApp:
             self.drive = DriveClient()
 
     # ==================================================
+    # AUTO FETCH ON START
+    # ==================================================
+    def auto_fetch_on_start(self):
+        def worker():
+            try:
+                self.status_var.set("Auto fetching texts…")
+                self._ensure_drive()
+
+                files = self.drive.list_text_files()
+                for f in files:
+                    content = self._download_file(f["id"])
+                    save_text_file(f["name"], content)
+
+                self.status_var.set(f"Auto fetched {len(files)} files")
+
+            except Exception as e:
+                self.status_var.set("Auto fetch failed")
+                print("Auto fetch error:", e)
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    # ==================================================
     # UPLOAD
     # ==================================================
     def upload(self):
@@ -130,8 +161,9 @@ class AutoTyperApp:
             try:
                 self._ensure_drive()
                 self.status_var.set("Uploading…")
-                self.drive.upload_text(filename, text)
-                self.status_var.set("Uploaded successfully")
+                final_name = self.drive.upload_text(filename, text)
+                self.status_var.set(f"Uploaded: {final_name}")
+                
             except Exception as e:
                 messagebox.showerror("Upload failed", str(e))
                 self.status_var.set("Upload failed")
@@ -139,7 +171,7 @@ class AutoTyperApp:
         threading.Thread(target=worker, daemon=True).start()
 
     # ==================================================
-    # FETCH
+    # FETCH (MANUAL)
     # ==================================================
     def fetch(self):
         def worker():
@@ -148,11 +180,9 @@ class AutoTyperApp:
                 self.status_var.set("Fetching texts…")
 
                 files = self.drive.list_text_files()
-
                 for f in files:
-                    content_path = f["name"]
                     content = self._download_file(f["id"])
-                    save_text_file(content_path, content)
+                    save_text_file(f["name"], content)
 
                 self.status_var.set(f"Fetched {len(files)} files")
 
@@ -162,6 +192,9 @@ class AutoTyperApp:
 
         threading.Thread(target=worker, daemon=True).start()
 
+    # ==================================================
+    # DOWNLOAD HELPER
+    # ==================================================
     def _download_file(self, file_id):
         import io
         from googleapiclient.http import MediaIoBaseDownload
@@ -181,7 +214,6 @@ class AutoTyperApp:
     # ==================================================
     def on_search(self, *args):
         query = self.search_var.get()
-
         results = search_files(query)
 
         self.search_results.delete(0, "end")
@@ -209,3 +241,25 @@ class AutoTyperApp:
             self.status_var.set(f"Loaded: {filename}")
         except Exception as e:
             messagebox.showerror("Load failed", str(e))
+
+    # ==================================================
+    # SETTINGS
+    # ==================================================
+    def open_settings(self):
+        def do_clear_cache():
+            clear_cache()
+            self.search_results.delete(0, "end")
+            self.search_results.grid_remove()
+            self.text_box.delete("1.0", "end")
+            self.status_var.set("Local cache cleared")
+
+        def do_logout():
+            drive_logout()
+            self.drive = None
+            self.status_var.set("Logged out from Google")
+
+        open_settings_dialog(
+            self.root,
+            on_clear_cache=do_clear_cache,
+            on_logout=do_logout
+        )

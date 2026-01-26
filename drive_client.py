@@ -1,4 +1,3 @@
-import os
 import io
 import sys
 from pathlib import Path
@@ -22,22 +21,32 @@ TOKEN_FILE = "token.json"
 
 
 # ======================================================
-# PYINSTALLER-SAFE PATH HANDLING
+# PATH HANDLING
 # ======================================================
 
-def get_base_path():
+def get_runtime_path():
     """
-    Returns correct base path whether running as script
-    or as PyInstaller exe.
+    Writable path for runtime files (token.json).
+    """
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).parent
+    return Path(__file__).parent
+
+
+def get_resource_path():
+    """
+    Read-only bundled resources (credentials.json).
     """
     if getattr(sys, "frozen", False):
         return Path(sys._MEIPASS)
     return Path(__file__).parent
 
 
-BASE_PATH = get_base_path()
-CREDENTIALS_PATH = BASE_PATH / CREDENTIALS_FILE
-TOKEN_PATH = BASE_PATH / TOKEN_FILE
+RUNTIME_PATH = get_runtime_path()
+RESOURCE_PATH = get_resource_path()
+
+CREDENTIALS_PATH = RESOURCE_PATH / CREDENTIALS_FILE
+TOKEN_PATH = RUNTIME_PATH / TOKEN_FILE
 
 
 # ======================================================
@@ -69,7 +78,7 @@ class DriveClient:
                 )
                 creds = flow.run_local_server(port=0)
 
-            with open(TOKEN_PATH, "w") as token:
+            with open(TOKEN_PATH, "w", encoding="utf-8") as token:
                 token.write(creds.to_json())
 
         return build("drive", "v3", credentials=creds)
@@ -95,7 +104,6 @@ class DriveClient:
         if files:
             return files[0]["id"]
 
-        # Create folder
         metadata = {
             "name": name,
             "mimeType": "application/vnd.google-apps.folder"
@@ -109,19 +117,45 @@ class DriveClient:
         return folder["id"]
 
     # -------------------------------
-    # UPLOAD TEXT FILE
+    # UPLOAD TEXT FILE (with duplicate handling)
     # -------------------------------
-
     def upload_text(self, filename, text):
+        # 1️⃣ Get existing filenames in Drive folder
+        existing_files = self.service.files().list(
+            q=f"'{self.folder_id}' in parents and trashed=false",
+            fields="files(name)"
+        ).execute()
+
+        existing_names = {f["name"] for f in existing_files.get("files", [])}
+
+        # 2️⃣ Resolve duplicate filename
+        final_name = filename
+
+        if final_name in existing_names:
+            # Split name and extension
+            if filename.lower().endswith(".txt"):
+                base = filename[:-4]
+                ext = ".txt"
+            else:
+                base = filename
+                ext = ""
+
+            counter = 1
+            while True:
+                candidate = f"{base} ({counter}){ext}"
+                if candidate not in existing_names:
+                    final_name = candidate
+                    break
+                counter += 1
+
+        # 3️⃣ Upload with resolved name
         file_metadata = {
-            "name": filename,
+            "name": final_name,
             "parents": [self.folder_id]
         }
 
-        text_bytes = io.BytesIO(text.encode("utf-8"))
-
         media = MediaIoBaseUpload(
-            text_bytes,
+            io.BytesIO(text.encode("utf-8")),
             mimetype="text/plain",
             resumable=False
         )
@@ -131,14 +165,12 @@ class DriveClient:
             media_body=media,
             fields="id"
         ).execute()
+        
+        return final_name
     # -------------------------------
     # LIST ALL TEXT FILES
     # -------------------------------
     def list_text_files(self):
-        """
-        Returns list of dicts:
-        [{id, name}]
-        """
         query = (
             f"'{self.folder_id}' in parents and "
             "mimeType='text/plain' and "
@@ -153,18 +185,28 @@ class DriveClient:
         return response.get("files", [])
 
     # -------------------------------
-    # DOWNLOAD FILE
+    # DOWNLOAD FILE (to bytes)
     # -------------------------------
-    def download_file(self, file_id, save_path):
-        """
-        save_path: Path object
-        """
+    def download_file(self, file_id) -> str:
         request = self.service.files().get_media(fileId=file_id)
-        fh = io.FileIO(save_path, "wb")
+        fh = io.BytesIO()
         downloader = MediaIoBaseDownload(fh, request)
 
         done = False
         while not done:
             _, done = downloader.next_chunk()
 
-        fh.close()
+        return fh.getvalue().decode("utf-8")
+
+
+# ======================================================
+# LOGOUT (OAuth reset)
+# ======================================================
+
+def logout():
+    """
+    Logs out from Google by deleting stored OAuth token.
+    Next Drive action will ask for login again.
+    """
+    if TOKEN_PATH.exists():
+        TOKEN_PATH.unlink()
