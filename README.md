@@ -33,11 +33,6 @@ Paste your code into the app → press Start → it types everything for you.
 - Progress bar + live status
 - **Coding Mode** — auto deletes extra paired brackets after typing
 
-Keyboard shortcuts:
-- `R` = Restart  
-- `P` = Pause / Resume  
-- `S` = Stop  
-
 ---
 
 ## 🚀 How it works
