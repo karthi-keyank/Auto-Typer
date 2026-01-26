@@ -5,7 +5,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('credentials.json', '.')],
+    datas=[('firebase_service_account.json', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

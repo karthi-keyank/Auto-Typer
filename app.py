@@ -5,8 +5,7 @@ from ui import build_ui
 from typer import type_text
 import constants as C
 
-from drive_client import DriveClient
-from drive_client import logout as drive_logout
+from firebase_client import FirebaseClient
 from settings_dialog import open_settings_dialog
 
 from file_cache import (
@@ -15,6 +14,7 @@ from file_cache import (
     search_files,
     clear_cache
 )
+
 from upload_dialog import ask_upload_filename
 
 
@@ -32,8 +32,8 @@ class AutoTyperApp:
         self.is_running = False
         self.typed_count = 0
 
-        # Drive client (lazy init)
-        self.drive = None
+        # Firebase client (lazy init)
+        self.backend = None
 
         # -------------------------------
         # UI
@@ -115,12 +115,12 @@ class AutoTyperApp:
         self.root.after(C.PROGRESS_UPDATE_INTERVAL, self.update_progress)
 
     # ==================================================
-    # DRIVE INIT
+    # BACKEND INIT (Firebase)
     # ==================================================
-    def _ensure_drive(self):
-        if self.drive is None:
-            self.status_var.set("Connecting to Drive…")
-            self.drive = DriveClient()
+    def _ensure_backend(self):
+        if self.backend is None:
+            self.status_var.set("Connecting to cloud…")
+            self.backend = FirebaseClient()
 
     # ==================================================
     # AUTO FETCH ON START
@@ -129,11 +129,11 @@ class AutoTyperApp:
         def worker():
             try:
                 self.status_var.set("Auto fetching texts…")
-                self._ensure_drive()
+                self._ensure_backend()
 
-                files = self.drive.list_text_files()
+                files = self.backend.list_text_files()
                 for f in files:
-                    content = self._download_file(f["id"])
+                    content = self.backend.download_text(f["id"])
                     save_text_file(f["name"], content)
 
                 self.status_var.set(f"Auto fetched {len(files)} files")
@@ -159,11 +159,12 @@ class AutoTyperApp:
 
         def worker():
             try:
-                self._ensure_drive()
+                self._ensure_backend()
                 self.status_var.set("Uploading…")
-                final_name = self.drive.upload_text(filename, text)
+
+                final_name = self.backend.upload_text(filename, text)
                 self.status_var.set(f"Uploaded: {final_name}")
-                
+
             except Exception as e:
                 messagebox.showerror("Upload failed", str(e))
                 self.status_var.set("Upload failed")
@@ -176,12 +177,12 @@ class AutoTyperApp:
     def fetch(self):
         def worker():
             try:
-                self._ensure_drive()
+                self._ensure_backend()
                 self.status_var.set("Fetching texts…")
 
-                files = self.drive.list_text_files()
+                files = self.backend.list_text_files()
                 for f in files:
-                    content = self._download_file(f["id"])
+                    content = self.backend.download_text(f["id"])
                     save_text_file(f["name"], content)
 
                 self.status_var.set(f"Fetched {len(files)} files")
@@ -191,23 +192,6 @@ class AutoTyperApp:
                 self.status_var.set("Fetch failed")
 
         threading.Thread(target=worker, daemon=True).start()
-
-    # ==================================================
-    # DOWNLOAD HELPER
-    # ==================================================
-    def _download_file(self, file_id):
-        import io
-        from googleapiclient.http import MediaIoBaseDownload
-
-        request = self.drive.service.files().get_media(fileId=file_id)
-        fh = io.BytesIO()
-        downloader = MediaIoBaseDownload(fh, request)
-
-        done = False
-        while not done:
-            _, done = downloader.next_chunk()
-
-        return fh.getvalue().decode("utf-8")
 
     # ==================================================
     # SEARCH
@@ -253,13 +237,12 @@ class AutoTyperApp:
             self.text_box.delete("1.0", "end")
             self.status_var.set("Local cache cleared")
 
-        def do_logout():
-            drive_logout()
-            self.drive = None
-            self.status_var.set("Logged out from Google")
+        def do_reset_backend():
+            self.backend = None
+            self.status_var.set("Cloud connection reset")
 
         open_settings_dialog(
             self.root,
             on_clear_cache=do_clear_cache,
-            on_logout=do_logout
+            on_logout=do_reset_backend
         )

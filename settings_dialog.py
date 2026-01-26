@@ -12,34 +12,52 @@ def open_settings_dialog(parent, on_clear_cache, on_logout):
     frame = ttk.Frame(win, padding=15)
     frame.grid()
 
-    ttk.Label(frame, text="Settings", font=("Segoe UI", 12, "bold")).grid(
-        row=0, column=0, sticky="w", pady=(0, 10)
-    )
+    ttk.Label(
+        frame,
+        text="Settings",
+        font=("Segoe UI", 12, "bold")
+    ).grid(row=0, column=0, sticky="w", pady=(0, 10))
 
+    # --------------------------------------------------
+    # CLEAR CACHE
+    # --------------------------------------------------
     def clear_cache():
         if messagebox.askyesno(
             "Clear Local Cache",
-            "This will remove all locally saved texts.\nGoogle Drive will NOT be affected.\n\nContinue?"
+            "This will remove all locally saved texts.\n"
+            "Cloud data will NOT be affected.\n\n"
+            "Continue?"
         ):
             on_clear_cache()
             win.destroy()
 
-    def logout():
+    # --------------------------------------------------
+    # RESET CLOUD CONNECTION
+    # --------------------------------------------------
+    def reset_cloud():
         if messagebox.askyesno(
-            "Logout",
-            "You will be logged out from Google.\nYou will need to login again next time.\n\nContinue?"
+            "Reset Cloud Connection",
+            "This will reset the cloud connection.\n"
+            "No data will be deleted.\n\n"
+            "Continue?"
         ):
             on_logout()
             win.destroy()
 
-    ttk.Button(frame, text="🧹 Clear Local Cache", command=clear_cache).grid(
-        row=1, column=0, sticky="ew", pady=5
-    )
+    ttk.Button(
+        frame,
+        text="🧹 Clear Local Cache",
+        command=clear_cache
+    ).grid(row=1, column=0, sticky="ew", pady=5)
 
-    ttk.Button(frame, text="🔐 Logout from Google", command=logout).grid(
-        row=2, column=0, sticky="ew", pady=5
-    )
+    ttk.Button(
+        frame,
+        text="☁ Reset Cloud Connection",
+        command=reset_cloud
+    ).grid(row=2, column=0, sticky="ew", pady=5)
 
-    ttk.Button(frame, text="Close", command=win.destroy).grid(
-        row=3, column=0, pady=(10, 0)
-    )
+    ttk.Button(
+        frame,
+        text="Close",
+        command=win.destroy
+    ).grid(row=3, column=0, pady=(10, 0))
