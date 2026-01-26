@@ -1,7 +1,7 @@
 # App window
 APP_TITLE = "Auto Typer"
-WINDOW_WIDTH = 750
-WINDOW_HEIGHT = 520
+WINDOW_WIDTH = 810
+WINDOW_HEIGHT = 550
 
 # Default values
 DEFAULT_START_DELAY = "2"

@@ -1,7 +1,0 @@
-User
-  ↓
-Your App
-  ↓
-Your Backend (server / API)
-  ↓
-Shared Database / Storage
