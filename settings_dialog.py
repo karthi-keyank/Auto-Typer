@@ -2,7 +2,12 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 
 
-def open_settings_dialog(parent, on_clear_cache, on_logout):
+def open_settings_dialog(
+    parent,
+    on_clear_cache,
+    on_logout,
+    on_check_updates        # 👈 NEW
+):
     win = tk.Toplevel(parent)
     win.title("Settings")
     win.resizable(False, False)
@@ -44,6 +49,13 @@ def open_settings_dialog(parent, on_clear_cache, on_logout):
             on_logout()
             win.destroy()
 
+    # --------------------------------------------------
+    # CHECK FOR UPDATES
+    # --------------------------------------------------
+    def check_updates():
+        on_check_updates()
+        win.destroy()
+
     ttk.Button(
         frame,
         text="🧹 Clear Local Cache",
@@ -58,6 +70,12 @@ def open_settings_dialog(parent, on_clear_cache, on_logout):
 
     ttk.Button(
         frame,
+        text="🔄 Check for Updates",     # 👈 NEW
+        command=check_updates
+    ).grid(row=3, column=0, sticky="ew", pady=5)
+
+    ttk.Button(
+        frame,
         text="Close",
         command=win.destroy
-    ).grid(row=3, column=0, pady=(10, 0))
+    ).grid(row=4, column=0, pady=(10, 0))

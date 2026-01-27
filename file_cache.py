@@ -18,33 +18,58 @@ CACHE_DIR = BASE_PATH / "text_cache"
 
 
 # ======================================================
-# CACHE
+# CACHE UTILS
 # ======================================================
 
 def ensure_cache_dir():
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def sanitize_filename(filename: str) -> str:
+    """
+    Converts cloud filenames into filesystem-safe filenames.
+    Example:
+        c/programming/arrays/test.txt
+        -> c__programming__arrays__test.txt
+    """
+    return (
+        filename
+        .replace("\\", "__")
+        .replace("/", "__")
+        .strip()
+    )
+
+
+# ======================================================
+# CACHE
+# ======================================================
+
 def save_text_file(filename: str, content: str):
     ensure_cache_dir()
-    path = CACHE_DIR / filename
+
+    safe_name = sanitize_filename(filename)
+    path = CACHE_DIR / safe_name
+
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
 
 
 def load_text_file(filename: str) -> str:
-    path = CACHE_DIR / filename
+    safe_name = sanitize_filename(filename)
+    path = CACHE_DIR / safe_name
+
     if not path.exists():
         raise FileNotFoundError(filename)
+
     with open(path, "r", encoding="utf-8") as f:
         return f.read()
-    
+
+
 def clear_cache():
     ensure_cache_dir()
     for file in CACHE_DIR.iterdir():
         if file.is_file():
             file.unlink()
-
 
 
 # ======================================================
@@ -75,9 +100,11 @@ def parse_filename(filename: str) -> Dict:
 def list_cached_files() -> List[Dict]:
     ensure_cache_dir()
     results = []
+
     for file in CACHE_DIR.iterdir():
         if file.is_file() and file.suffix == ".txt":
             results.append(parse_filename(file.name))
+
     return results
 
 
@@ -104,31 +131,26 @@ def search_files(query: str) -> List[Dict]:
         for qtag in tag_tokens:
             for tag in info["tags"]:
                 if qtag == tag:
-                    score += 5        # exact tag
+                    score += 5
                 elif tag.startswith(qtag):
-                    score += 3        # prefix tag
+                    score += 3
 
         # ---------- NAME MATCHING ----------
         for word in name_tokens:
             if word in info["name"]:
-                score += 2            # partial match
+                score += 2
             for nw in info["name_words"]:
                 if nw.startswith(word):
-                    score += 3        # prefix word
+                    score += 3
 
         # ---------- FALLBACK ----------
-        # If user types "test" instead of "#test"
         for word in name_tokens:
             for tag in info["tags"]:
                 if tag.startswith(word):
                     score += 1
 
         if score > 0:
-            results.append({
-                **info,
-                "score": score
-            })
+            results.append({**info, "score": score})
 
-    # Sort by relevance
     results.sort(key=lambda x: x["score"], reverse=True)
     return results

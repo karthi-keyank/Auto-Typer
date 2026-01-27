@@ -1,3 +1,10 @@
+.gitignore
 credentials.json
 token.json
 firebase_service_account.json
+__pycache__
+.venv
+build
+controllers\__pycache__
+text_cache
+AutoTyper.spec

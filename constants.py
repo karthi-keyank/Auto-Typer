@@ -1,3 +1,8 @@
+#App version
+APP_VERSION = "3.2"
+
+GITHUB_OWNER = "karthi-keyank"
+GITHUB_REPO  = "Auto-Typer"
 # App window
 APP_TITLE = "Auto Typer"
 WINDOW_WIDTH = 810

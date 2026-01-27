@@ -4059,16 +4059,14 @@ imported by:
   <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/app.py" type="text/plain"><tt>app</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
-    <a href="#constants">constants</a>
- &#8226;   <a href="#file_cache">file_cache</a>
- &#8226;   <a href="#firebase_client">firebase_client</a>
- &#8226;   <a href="#settings_dialog">settings_dialog</a>
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.search_controller">controllers.search_controller</a>
+ &#8226;   <a href="#controllers.settings_controller">controllers.settings_controller</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
  &#8226;   <a href="#threading">threading</a>
  &#8226;   <a href="#tkinter">tkinter</a>
- &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
- &#8226;   <a href="#typer">typer</a>
  &#8226;   <a href="#ui">ui</a>
- &#8226;   <a href="#upload_dialog">upload_dialog</a>
 
   </div>
   <div class="import">
@@ -6718,7 +6716,8 @@ imported by:
   <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/constants.py" type="text/plain"><tt>constants</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
  &#8226;   <a href="#typer">typer</a>
  &#8226;   <a href="#ui">ui</a>
 
@@ -6839,6 +6838,126 @@ imported by:
  &#8226;   <a href="#grpc._plugin_wrapping">grpc._plugin_wrapping</a>
  &#8226;   <a href="#grpc._server">grpc._server</a>
  &#8226;   <a href="#unittest.async_case">unittest.async_case</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers"></a>
+  <a target="code" href="-" type="text/plain"><tt>controllers</tt></a>
+<span class="moduletype">NamespacePackage</span>  <div class="import">
+imported by:
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.search_controller">controllers.search_controller</a>
+ &#8226;   <a href="#controllers.settings_controller">controllers.settings_controller</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers.cloud_controller"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/controllers/cloud_controller.py" type="text/plain"><tt>controllers.cloud_controller</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#controllers">controllers</a>
+ &#8226;   <a href="#file_cache">file_cache</a>
+ &#8226;   <a href="#firebase_client">firebase_client</a>
+ &#8226;   <a href="#threading">threading</a>
+ &#8226;   <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+ &#8226;   <a href="#upload_dialog">upload_dialog</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app">app</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers.search_controller"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/controllers/search_controller.py" type="text/plain"><tt>controllers.search_controller</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#controllers">controllers</a>
+ &#8226;   <a href="#file_cache">file_cache</a>
+ &#8226;   <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app">app</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers.settings_controller"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/controllers/settings_controller.py" type="text/plain"><tt>controllers.settings_controller</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#controllers">controllers</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
+ &#8226;   <a href="#file_cache">file_cache</a>
+ &#8226;   <a href="#settings_dialog">settings_dialog</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app">app</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers.typing_controller"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/controllers/typing_controller.py" type="text/plain"><tt>controllers.typing_controller</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#constants">constants</a>
+ &#8226;   <a href="#controllers">controllers</a>
+ &#8226;   <a href="#threading">threading</a>
+ &#8226;   <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+ &#8226;   <a href="#typer">typer</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app">app</a>
+ &#8226;   <a href="#typer">typer</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="controllers.update_controller"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/controllers/update_controller.py" type="text/plain"><tt>controllers.update_controller</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#constants">constants</a>
+ &#8226;   <a href="#controllers">controllers</a>
+ &#8226;   <a href="#threading">threading</a>
+ &#8226;   <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
+ &#8226;   <a href="#update_checker">update_checker</a>
+ &#8226;   <a href="#update_dialog">update_dialog</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#app">app</a>
+ &#8226;   <a href="#controllers.settings_controller">controllers.settings_controller</a>
 
   </div>
 
@@ -12045,7 +12164,9 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.search_controller">controllers.search_controller</a>
+ &#8226;   <a href="#controllers.settings_controller">controllers.settings_controller</a>
 
   </div>
 
@@ -12207,7 +12328,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
 
   </div>
 
@@ -21250,6 +21371,22 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="hotkeys"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/hotkeys.py" type="text/plain"><tt>hotkeys</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#tkinter">tkinter</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#ui">ui</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="hpack"></a>
   <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/.venv/Lib/site-packages/hpack/__init__.py" type="text/plain"><tt>hpack</tt></a>
 <span class="moduletype">Package</span>  <div class="import">
@@ -24415,6 +24552,7 @@ imported by:
  &#8226;   <a href="#setuptools._vendor.importlib_metadata">setuptools._vendor.importlib_metadata</a>
  &#8226;   <a href="#setuptools.config._validate_pyproject.error_reporting">setuptools.config._validate_pyproject.error_reporting</a>
  &#8226;   <a href="#setuptools.msvc">setuptools.msvc</a>
+ &#8226;   <a href="#update_checker">update_checker</a>
  &#8226;   <a href="#urllib3._request_methods">urllib3._request_methods</a>
  &#8226;   <a href="#urllib3.contrib.emscripten.fetch">urllib3.contrib.emscripten.fetch</a>
  &#8226;   <a href="#urllib3.contrib.emscripten.response">urllib3.contrib.emscripten.response</a>
@@ -30181,7 +30319,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.settings_controller">controllers.settings_controller</a>
 
   </div>
 
@@ -35522,6 +35660,9 @@ imported by:
  &#8226;   <a href="#concurrent.futures._base">concurrent.futures._base</a>
  &#8226;   <a href="#concurrent.futures.process">concurrent.futures.process</a>
  &#8226;   <a href="#concurrent.futures.thread">concurrent.futures.thread</a>
+ &#8226;   <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
  &#8226;   <a href="#cryptography.hazmat.bindings.openssl.binding">cryptography.hazmat.bindings.openssl.binding</a>
  &#8226;   <a href="#firebase_admin">firebase_admin</a>
  &#8226;   <a href="#google.api_core.bidi">google.api_core.bidi</a>
@@ -35682,6 +35823,11 @@ imports:
   <div class="import">
 imported by:
     <a href="#app">app</a>
+ &#8226;   <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.search_controller">controllers.search_controller</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
+ &#8226;   <a href="#hotkeys">hotkeys</a>
  &#8226;   <a href="#main.py">main.py</a>
  &#8226;   <a href="#mouseinfo">mouseinfo</a>
  &#8226;   <a href="#pymsgbox">pymsgbox</a>
@@ -35691,6 +35837,7 @@ imported by:
  &#8226;   <a href="#tkinter.messagebox">tkinter.messagebox</a>
  &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
  &#8226;   <a href="#ui">ui</a>
+ &#8226;   <a href="#update_dialog">update_dialog</a>
  &#8226;   <a href="#upload_dialog">upload_dialog</a>
 
   </div>
@@ -35740,7 +35887,10 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
+ &#8226;   <a href="#controllers.search_controller">controllers.search_controller</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
+ &#8226;   <a href="#controllers.update_controller">controllers.update_controller</a>
  &#8226;   <a href="#settings_dialog">settings_dialog</a>
  &#8226;   <a href="#tkinter">tkinter</a>
  &#8226;   <a href="#upload_dialog">upload_dialog</a>
@@ -35763,6 +35913,7 @@ imported by:
  &#8226;   <a href="#settings_dialog">settings_dialog</a>
  &#8226;   <a href="#tkinter">tkinter</a>
  &#8226;   <a href="#ui">ui</a>
+ &#8226;   <a href="#update_dialog">update_dialog</a>
  &#8226;   <a href="#upload_dialog">upload_dialog</a>
 
   </div>
@@ -36037,13 +36188,14 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#constants">constants</a>
+ &#8226;   <a href="#controllers.typing_controller">controllers.typing_controller</a>
  &#8226;   <a href="#pyautogui">pyautogui</a>
  &#8226;   <a href="#time">time</a>
 
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.typing_controller">controllers.typing_controller</a>
 
   </div>
 
@@ -36540,6 +36692,7 @@ imported by:
  &#8226;   <a href="#tomllib._re">tomllib._re</a>
  &#8226;   <a href="#tomllib._types">tomllib._types</a>
  &#8226;   <a href="#typing_extensions">typing_extensions</a>
+ &#8226;   <a href="#update_checker">update_checker</a>
  &#8226;   <a href="#urllib3">urllib3</a>
  &#8226;   <a href="#urllib3._base_connection">urllib3._base_connection</a>
  &#8226;   <a href="#urllib3._collections">urllib3._collections</a>
@@ -36660,6 +36813,7 @@ imported by:
 <span class="moduletype">SourceModule</span>  <div class="import">
 imports:
     <a href="#constants">constants</a>
+ &#8226;   <a href="#hotkeys">hotkeys</a>
  &#8226;   <a href="#tkinter">tkinter</a>
  &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
 
@@ -36993,6 +37147,43 @@ imported by:
 </div>
 
 <div class="node">
+  <a name="update_checker"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/update_checker.py" type="text/plain"><tt>update_checker</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#json">json</a>
+ &#8226;   <a href="#typing">typing</a>
+ &#8226;   <a href="#urllib.error">urllib.error</a>
+ &#8226;   <a href="#urllib.request">urllib.request</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#controllers.update_controller">controllers.update_controller</a>
+
+  </div>
+
+</div>
+
+<div class="node">
+  <a name="update_dialog"></a>
+  <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/update_dialog.py" type="text/plain"><tt>update_dialog</tt></a>
+<span class="moduletype">SourceModule</span>  <div class="import">
+imports:
+    <a href="#tkinter">tkinter</a>
+ &#8226;   <a href="#tkinter.ttk">tkinter.ttk</a>
+ &#8226;   <a href="#webbrowser">webbrowser</a>
+
+  </div>
+  <div class="import">
+imported by:
+    <a href="#controllers.update_controller">controllers.update_controller</a>
+
+  </div>
+
+</div>
+
+<div class="node">
   <a name="upload_dialog"></a>
   <a target="code" href="///C:/Users/karth/projects/python-projects/SkillRackAutoCompletion/upload_dialog.py" type="text/plain"><tt>upload_dialog</tt></a>
 <span class="moduletype">SourceModule</span>  <div class="import">
@@ -37004,7 +37195,7 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#app">app</a>
+    <a href="#controllers.cloud_controller">controllers.cloud_controller</a>
 
   </div>
 
@@ -37043,7 +37234,8 @@ imports:
   </div>
   <div class="import">
 imported by:
-    <a href="#urllib.request">urllib.request</a>
+    <a href="#update_checker">update_checker</a>
+ &#8226;   <a href="#urllib.request">urllib.request</a>
 
   </div>
 
@@ -37141,6 +37333,7 @@ imported by:
  &#8226;   <a href="#requests.compat">requests.compat</a>
  &#8226;   <a href="#setuptools._vendor.jaraco.context">setuptools._vendor.jaraco.context</a>
  &#8226;   <a href="#setuptools.config._validate_pyproject.formats">setuptools.config._validate_pyproject.formats</a>
+ &#8226;   <a href="#update_checker">update_checker</a>
  &#8226;   <a href="#xml.sax.saxutils">xml.sax.saxutils</a>
 
   </div>
@@ -38551,6 +38744,7 @@ imports:
 imported by:
     <a href="#mouseinfo">mouseinfo</a>
  &#8226;   <a href="#pydoc">pydoc</a>
+ &#8226;   <a href="#update_dialog">update_dialog</a>
 
   </div>
 
