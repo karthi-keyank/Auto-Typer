@@ -228,6 +228,14 @@ The developer is not responsible for misuse.
 
 ---
 
+## 🙌 Thanks for Our Contributors
+
+| Name        | Role          |
+|-------------|---------------|
+| Kamelsh    | Code Uploader |
+| Vasanth SA | Code Uploader |
+
+
 ## ⭐ Final Note
 
 AutoTyper v3.1 is designed to be:
@@ -239,4 +247,3 @@ AutoTyper v3.1 is designed to be:
 
 It is no longer just an auto typer —
 it’s a **personal and community-ready code & text assistant** 🚀
-
