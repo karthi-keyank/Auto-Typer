@@ -6,7 +6,8 @@ def open_settings_dialog(
     parent,
     on_clear_cache,
     on_logout,
-    on_check_updates        # 👈 NEW
+    on_check_updates,
+    on_donate
 ):
     win = tk.Toplevel(parent)
     win.title("Settings")
@@ -73,9 +74,17 @@ def open_settings_dialog(
         text="🔄 Check for Updates",     # 👈 NEW
         command=check_updates
     ).grid(row=3, column=0, sticky="ew", pady=5)
+    
+    ttk.Button(
+        frame,
+        text="❤️ Donate",
+        command=lambda: on_donate()
+    ).grid(row=4, column=0, sticky="ew", pady=5)
 
     ttk.Button(
         frame,
         text="Close",
         command=win.destroy
-    ).grid(row=4, column=0, pady=(10, 0))
+    ).grid(row=5, column=0, pady=(10, 0))
+    
+    

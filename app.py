@@ -2,8 +2,11 @@ import threading
 from tkinter import Tk
 
 from ui import build_ui
+from donate_dialog import open_donate_dialog
 
+# --------------------------------------------------
 # Controllers
+# --------------------------------------------------
 from controllers.typing_controller import (
     start_typing,
     pause_typing,
@@ -25,7 +28,7 @@ from controllers.search_controller import (
 )
 
 from controllers.settings_controller import open_settings
-from controllers.update_controller import check_for_updates   # 👈 NEW
+from controllers.update_controller import check_for_updates
 
 
 class AutoTyperApp:
@@ -37,6 +40,7 @@ class AutoTyperApp:
         # ---------------------------------
         self.is_running = False
         self.typed_count = 0
+        self.progress_max = 1
 
         self.stop_event = threading.Event()
         self.resume_event = threading.Event()
@@ -66,20 +70,41 @@ class AutoTyperApp:
         # Startup tasks (non-blocking)
         # ---------------------------------
         self.root.after(500, lambda: auto_fetch_on_start(self))
-        self.root.after(800, lambda: check_for_updates(self))   # 👈 UPDATE CHECK
+        self.root.after(800, lambda: check_for_updates(self))
 
+        self.root.protocol(
+            "WM_DELETE_WINDOW",
+            lambda: open_donate_dialog(self.root, exit_after=True)
+        )
+
+        # ---------------------------------
+        # Init progress bar
+        # ---------------------------------
         update_progress(self)
 
     # ==================================================
-    # Button bridges
+    # Button bridges (UI → Controllers)
     # ==================================================
-    def start(self): start_typing(self)
-    def pause(self): pause_typing(self)
-    def stop(self): stop_typing(self)
-    def restart(self): restart_typing(self)
-    def fetch(self): fetch_texts(self)
-    def upload(self): upload_text(self)
-    def open_settings(self): open_settings(self)
+    def start(self):
+        start_typing(self)
+
+    def pause(self):
+        pause_typing(self)
+
+    def stop(self):
+        stop_typing(self)
+
+    def restart(self):
+        restart_typing(self)
+
+    def fetch(self):
+        fetch_texts(self)
+
+    def upload(self):
+        upload_text(self)
+
+    def open_settings(self):
+        open_settings(self)
 
     # ==================================================
     # 🔑 SEARCH BRIDGE
