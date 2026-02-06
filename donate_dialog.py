@@ -4,12 +4,21 @@ import sys
 import os
 
 
-def resource_path(relative_path):
+# ======================================================
+# RESOURCE PATH (PyInstaller safe)
+# ======================================================
+def resource_path(relative_path: str) -> str:
+    """
+    Get absolute path to resource, works for dev and PyInstaller exe.
+    """
     if hasattr(sys, "_MEIPASS"):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 
 
+# ======================================================
+# WINDOW CENTERING
+# ======================================================
 def center_window(win):
     win.update_idletasks()
     w = win.winfo_width()
@@ -21,6 +30,9 @@ def center_window(win):
     win.geometry(f"+{x}+{y}")
 
 
+# ======================================================
+# DONATE DIALOG
+# ======================================================
 def open_donate_dialog(parent, exit_after=True):
     win = tk.Toplevel(parent)
     win.title("Support Auto Typer ❤️")
@@ -97,18 +109,27 @@ def open_donate_dialog(parent, exit_after=True):
         if qr_loaded:
             return
 
-        path = resource_path("assets/gpay_qr.png")
+        # 🔑 IMPORTANT: NO leading slash
+        path = resource_path("gpay_qr.png")
+
         if not os.path.exists(path):
-            messagebox.showerror("Error", "QR image not found")
+            messagebox.showerror(
+                "QR Code Missing",
+                f"QR image not found:\n{path}"
+            )
             return
 
-        img = tk.PhotoImage(file=path)
-
-        img = img.subsample(5, 6)
-
-        qr_label.configure(image=img)
-        qr_label.image = img
-        qr_loaded = True
+        try:
+            img = tk.PhotoImage(file=path)
+            img = img.subsample(5, 6)
+            qr_label.configure(image=img)
+            qr_label.image = img
+            qr_loaded = True
+        except Exception as e:
+            messagebox.showerror(
+                "QR Load Error",
+                f"Failed to load QR image.\n\n{e}"
+            )
 
     # ---------- TOGGLE ----------
     showing_qr = False

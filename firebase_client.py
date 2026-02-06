@@ -1,5 +1,5 @@
+from typing import List, Dict, Set
 from datetime import datetime
-from typing import List, Dict
 
 from firebase_admin import firestore
 from firebase_config import get_db
@@ -18,16 +18,27 @@ COLLECTION_NAME = "texts"
 
 class FirebaseClient:
     def __init__(self):
-        self.db = get_db()
-        self.col = self.db.collection(COLLECTION_NAME)
+        try:
+            self.db = get_db()
+            self.col = self.db.collection(COLLECTION_NAME)
+        except Exception as e:
+            raise RuntimeError(
+                "Failed to initialize Firebase client.\n"
+                f"{e}"
+            ) from e
 
     # --------------------------------------------------
     # UPLOAD TEXT (duplicate-safe)
     # --------------------------------------------------
     def upload_text(self, filename: str, text: str) -> str:
-        existing_names = self._get_existing_names()
+        if not filename or not text:
+            raise ValueError("Filename or text is empty")
 
-        final_name = self._resolve_duplicate(filename, existing_names)
+        existing_names = self._get_existing_names()
+        final_name = self._resolve_duplicate(
+            filename,
+            existing_names
+        )
 
         self.col.add({
             "name": final_name,
@@ -41,14 +52,28 @@ class FirebaseClient:
     # LIST TEXT FILES
     # --------------------------------------------------
     def list_text_files(self) -> List[Dict]:
-        docs = self.col.stream()
-
         results = []
+
+        try:
+            docs = self.col.stream()
+        except Exception as e:
+            raise RuntimeError(
+                "Failed to list texts from Firebase.\n"
+                f"{e}"
+            ) from e
+
         for doc in docs:
             data = doc.to_dict()
+            if not data:
+                continue
+
+            name = data.get("name")
+            if not isinstance(name, str):
+                continue
+
             results.append({
                 "id": doc.id,
-                "name": data.get("name"),
+                "name": name,
             })
 
         return results
@@ -57,21 +82,51 @@ class FirebaseClient:
     # DOWNLOAD TEXT
     # --------------------------------------------------
     def download_text(self, doc_id: str) -> str:
+        if not doc_id:
+            raise ValueError("Document ID is empty")
+
         doc = self.col.document(doc_id).get()
 
         if not doc.exists:
-            raise FileNotFoundError("Text not found in Firebase")
+            raise FileNotFoundError(
+                "Text not found in Firebase"
+            )
 
-        return doc.to_dict().get("content", "")
+        data = doc.to_dict() or {}
+        content = data.get("content")
+
+        if not isinstance(content, str):
+            return ""
+
+        return content
 
     # --------------------------------------------------
     # INTERNAL HELPERS
     # --------------------------------------------------
-    def _get_existing_names(self) -> set:
-        docs = self.col.stream()
-        return {doc.to_dict().get("name") for doc in docs}
+    def _get_existing_names(self) -> Set[str]:
+        names = set()
 
-    def _resolve_duplicate(self, filename: str, existing_names: set) -> str:
+        try:
+            docs = self.col.stream()
+        except Exception:
+            return names
+
+        for doc in docs:
+            data = doc.to_dict()
+            if not data:
+                continue
+
+            name = data.get("name")
+            if isinstance(name, str):
+                names.add(name)
+
+        return names
+
+    def _resolve_duplicate(
+        self,
+        filename: str,
+        existing_names: Set[str]
+    ) -> str:
         if filename not in existing_names:
             return filename
 

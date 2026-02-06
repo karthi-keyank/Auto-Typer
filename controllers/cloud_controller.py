@@ -6,15 +6,29 @@ from file_cache import save_text_file
 
 
 # ==================================================
-# INTERNAL: ENSURE BACKEND
+# INTERNAL: ENSURE BACKEND (SAFE)
 # ==================================================
 def _ensure_backend(app):
-    if app.backend is None:
+    if app.backend is not None:
+        return
+
+    try:
         app.root.after(
             0,
             lambda: app.status_var.set("Connecting to cloud…")
         )
         app.backend = FirebaseClient()
+
+    except Exception as e:
+        app.backend = None
+        app.root.after(
+            0,
+            lambda: messagebox.showerror(
+                "Cloud connection failed",
+                f"Could not connect to Firebase.\n\n{e}"
+            )
+        )
+        raise
 
 
 # ==================================================
@@ -23,12 +37,13 @@ def _ensure_backend(app):
 def auto_fetch_on_start(app):
     def worker():
         try:
+            _ensure_backend(app)
+
             app.root.after(
                 0,
                 lambda: app.status_var.set("Auto fetching texts…")
             )
 
-            _ensure_backend(app)
             files = app.backend.list_text_files()
 
             for f in files:
@@ -37,7 +52,9 @@ def auto_fetch_on_start(app):
 
             app.root.after(
                 0,
-                lambda: app.status_var.set(f"Auto fetched {len(files)} files")
+                lambda: app.status_var.set(
+                    f"Auto fetched {len(files)} files"
+                )
             )
 
         except Exception as e:
@@ -57,6 +74,7 @@ def fetch_texts(app):
     def worker():
         try:
             _ensure_backend(app)
+
             app.root.after(
                 0,
                 lambda: app.status_var.set("Fetching texts…")
@@ -70,13 +88,18 @@ def fetch_texts(app):
 
             app.root.after(
                 0,
-                lambda: app.status_var.set(f"Fetched {len(files)} files")
+                lambda: app.status_var.set(
+                    f"Fetched {len(files)} files"
+                )
             )
 
         except Exception as e:
             app.root.after(
                 0,
-                lambda: messagebox.showerror("Fetch failed", str(e))
+                lambda: messagebox.showerror(
+                    "Fetch failed",
+                    str(e)
+                )
             )
             app.root.after(
                 0,
@@ -94,7 +117,10 @@ def upload_text(app):
 
     text = app.text_box.get("1.0", "end").rstrip()
     if not text:
-        messagebox.showwarning("Nothing to upload", "Text box is empty")
+        messagebox.showwarning(
+            "Nothing to upload",
+            "Text box is empty"
+        )
         return
 
     filename = ask_upload_filename(app.root)
@@ -104,22 +130,31 @@ def upload_text(app):
     def worker():
         try:
             _ensure_backend(app)
+
             app.root.after(
                 0,
                 lambda: app.status_var.set("Uploading…")
             )
 
-            final_name = app.backend.upload_text(filename, text)
+            final_name = app.backend.upload_text(
+                filename,
+                text
+            )
 
             app.root.after(
                 0,
-                lambda: app.status_var.set(f"Uploaded: {final_name}")
+                lambda: app.status_var.set(
+                    f"Uploaded: {final_name}"
+                )
             )
 
         except Exception as e:
             app.root.after(
                 0,
-                lambda: messagebox.showerror("Upload failed", str(e))
+                lambda: messagebox.showerror(
+                    "Upload failed",
+                    str(e)
+                )
             )
             app.root.after(
                 0,
