@@ -1,5 +1,5 @@
 #App version
-APP_VERSION = "3.2.1"
+APP_VERSION = "3.2.2"
 
 GITHUB_OWNER = "karthi-keyank"
 GITHUB_REPO  = "Auto-Typer"
