@@ -2,7 +2,7 @@ import threading
 from tkinter import Tk
 
 from ui import build_ui
-from donate_dialog import open_donate_dialog
+
 
 # --------------------------------------------------
 # Controllers
@@ -71,11 +71,6 @@ class AutoTyperApp:
         # ---------------------------------
         self.root.after(500, lambda: auto_fetch_on_start(self))
         self.root.after(800, lambda: check_for_updates(self))
-
-        self.root.protocol(
-            "WM_DELETE_WINDOW",
-            lambda: open_donate_dialog(self.root, exit_after=True)
-        )
 
         # ---------------------------------
         # Init progress bar
