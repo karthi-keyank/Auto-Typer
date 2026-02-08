@@ -1,10 +1,17 @@
-.gitignore
+# 🔐 Secrets
 credentials.json
 token.json
 firebase_service_account.json
-__pycache__
-.venv
-build
-controllers\__pycache__
-text_cache
+
+# 🐍 Python
+__pycache__/
+*.pyc
+.venv/
+
+# 🏗 Build artifacts
+build/
+dist/
 AutoTyper.spec
+
+# 🧠 App cache
+text_cache/
