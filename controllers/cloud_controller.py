@@ -2,42 +2,62 @@ import threading
 from tkinter import messagebox
 
 from firebase_client import FirebaseClient
-from file_cache import save_text_file
-
+from file_cache import (
+    save_text_file,
+    load_fetched_ids,
+    save_fetched_ids
+)
 
 # ==================================================
-# INTERNAL: ENSURE BACKEND
+# INTERNAL: ENSURE BACKEND (THREAD-SAFE)
 # ==================================================
+
+_backend_lock = threading.Lock()
+
+
 def _ensure_backend(app):
     if app.backend is None:
-        app.root.after(
-            0,
-            lambda: app.status_var.set("Connecting to cloud…")
-        )
-        app.backend = FirebaseClient()
+        with _backend_lock:
+            if app.backend is None:
+                app.backend = FirebaseClient()
 
 
 # ==================================================
-# AUTO FETCH ON STARTUP
+# AUTO FETCH ON STARTUP  ✅ RESTORED
 # ==================================================
+
 def auto_fetch_on_start(app):
     def worker():
         try:
             app.root.after(
                 0,
-                lambda: app.status_var.set("Auto fetching texts…")
+                lambda: app.status_var.set("Auto fetching new texts…")
             )
 
             _ensure_backend(app)
+
+            fetched_ids = load_fetched_ids()
             files = app.backend.list_text_files()
 
+            new_count = 0
+
             for f in files:
+                if f["id"] in fetched_ids:
+                    continue
+
                 content = app.backend.download_text(f["id"])
                 save_text_file(f["name"], content)
 
+                fetched_ids.add(f["id"])
+                new_count += 1
+
+            save_fetched_ids(fetched_ids)
+
             app.root.after(
                 0,
-                lambda: app.status_var.set(f"Auto fetched {len(files)} files")
+                lambda: app.status_var.set(
+                    f"Auto fetched {new_count} new file(s)"
+                )
             )
 
         except Exception as e:
@@ -53,31 +73,43 @@ def auto_fetch_on_start(app):
 # ==================================================
 # MANUAL FETCH
 # ==================================================
+
 def fetch_texts(app):
     def worker():
         try:
-            _ensure_backend(app)
             app.root.after(
                 0,
-                lambda: app.status_var.set("Fetching texts…")
+                lambda: app.status_var.set("Fetching new texts…")
             )
 
+            _ensure_backend(app)
+
+            fetched_ids = load_fetched_ids()
             files = app.backend.list_text_files()
 
+            new_count = 0
+
             for f in files:
+                if f["id"] in fetched_ids:
+                    continue
+
                 content = app.backend.download_text(f["id"])
                 save_text_file(f["name"], content)
 
+                fetched_ids.add(f["id"])
+                new_count += 1
+
+            save_fetched_ids(fetched_ids)
+
             app.root.after(
                 0,
-                lambda: app.status_var.set(f"Fetched {len(files)} files")
+                lambda: app.status_var.set(
+                    f"Fetched {new_count} new file(s)"
+                )
             )
 
         except Exception as e:
-            app.root.after(
-                0,
-                lambda: messagebox.showerror("Fetch failed", str(e))
-            )
+            print("Fetch error:", e)
             app.root.after(
                 0,
                 lambda: app.status_var.set("Fetch failed")
@@ -89,6 +121,7 @@ def fetch_texts(app):
 # ==================================================
 # UPLOAD
 # ==================================================
+
 def upload_text(app):
     from upload_dialog import ask_upload_filename
 
@@ -103,11 +136,12 @@ def upload_text(app):
 
     def worker():
         try:
-            _ensure_backend(app)
             app.root.after(
                 0,
                 lambda: app.status_var.set("Uploading…")
             )
+
+            _ensure_backend(app)
 
             final_name = app.backend.upload_text(filename, text)
 
@@ -117,6 +151,7 @@ def upload_text(app):
             )
 
         except Exception as e:
+            print("Upload error:", e)
             app.root.after(
                 0,
                 lambda: messagebox.showerror("Upload failed", str(e))

@@ -131,7 +131,7 @@ def build_ui(app):
     app.char_delay_entry.insert(0, C.DEFAULT_CHAR_DELAY)
     app.char_delay_entry.grid(row=0, column=3, pady=4)
 
-    app.coding_mode = tk.BooleanVar(value=False)
+    app.coding_mode = tk.BooleanVar(value=True)
     ttk.Checkbutton(
         options,
         text="Coding mode (auto delete paired brackets)",

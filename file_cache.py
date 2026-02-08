@@ -1,13 +1,14 @@
 import sys
+import json
 from pathlib import Path
-from typing import List, Dict
+from typing import List, Dict, Set
 
 
 # ======================================================
 # PYINSTALLER-SAFE BASE PATH
 # ======================================================
 
-def get_base_path():
+def get_base_path() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).parent
     return Path(__file__).parent
@@ -15,6 +16,7 @@ def get_base_path():
 
 BASE_PATH = get_base_path()
 CACHE_DIR = BASE_PATH / "text_cache"
+IDS_FILE = CACHE_DIR / "fetched_ids.json"
 
 
 # ======================================================
@@ -41,7 +43,39 @@ def sanitize_filename(filename: str) -> str:
 
 
 # ======================================================
-# CACHE
+# FETCH ID TRACKING (⭐ NEW ⭐)
+# ======================================================
+
+def load_fetched_ids() -> Set[str]:
+    """
+    Returns a set of cloud file IDs already fetched.
+    """
+    ensure_cache_dir()
+
+    if not IDS_FILE.exists():
+        return set()
+
+    try:
+        with open(IDS_FILE, "r", encoding="utf-8") as f:
+            return set(json.load(f))
+    except Exception:
+        # Corrupt or invalid file → reset safely
+        return set()
+
+
+def save_fetched_ids(ids_set: Set[str]):
+    ensure_cache_dir()
+    with open(IDS_FILE, "w", encoding="utf-8") as f:
+        json.dump(sorted(ids_set), f, indent=2)
+
+
+def clear_fetched_ids():
+    if IDS_FILE.exists():
+        IDS_FILE.unlink()
+
+
+# ======================================================
+# CACHE FILES
 # ======================================================
 
 def save_text_file(filename: str, content: str):
@@ -67,6 +101,7 @@ def load_text_file(filename: str) -> str:
 
 def clear_cache():
     ensure_cache_dir()
+
     for file in CACHE_DIR.iterdir():
         if file.is_file():
             file.unlink()
